@@ -12,12 +12,12 @@ import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.jokerapp.R
-import com.example.jokerapp.data.CategoryRemoteDataSource
 import com.example.jokerapp.model.Category
 import com.example.jokerapp.presentation.HomePresenter
+import com.example.jokerapp.view.JokeFragment.Companion.CATEGORY_KEY
 import com.xwray.groupie.GroupieAdapter
 
-class HomeFragment: Fragment() {
+class HomeFragment : Fragment() {
 
     private lateinit var presenter: HomePresenter
     private lateinit var progressBar: ProgressBar
@@ -31,9 +31,9 @@ class HomeFragment: Fragment() {
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
-        savedInstanceState: Bundle?
+        savedInstanceState: Bundle?,
     ): View? {
-      return inflater.inflate(R.layout.fragment_home, container, false)
+        return inflater.inflate(R.layout.fragment_home, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
@@ -44,26 +44,37 @@ class HomeFragment: Fragment() {
         val recyclerView = view.findViewById<RecyclerView>(R.id.rv_main)
         recyclerView.layoutManager = LinearLayoutManager(requireContext())
 
+        if (adapter.itemCount == 0) {
+            presenter.findAllCategories()
+        }
+
         recyclerView.adapter = adapter
 
-        presenter.findAllCategories()
+        adapter.setOnItemClickListener { item, view ->
+            val bundle = Bundle()
+            val categoryName = (item as CategoryItem).category.name
+            bundle.putString(CATEGORY_KEY, categoryName)
+
+            findNavController().navigate(R.id.action_nav_home_to_nav_joke, bundle)
+        }
+
     }
 
-    fun showCategories(response: List<Category>){
+    fun showCategories(response: List<Category>) {
         val categories = response.map { CategoryItem(it) }
         adapter.addAll(categories)
         adapter.notifyDataSetChanged()
     }
 
-    fun visibilityProgressBar(visibility: Boolean){
-        if (visibility){
+    fun visibilityProgressBar(visibility: Boolean) {
+        if (visibility) {
             progressBar.visibility = View.VISIBLE
         } else {
             progressBar.visibility = View.GONE
         }
     }
 
-    fun showFailure(message: String){
+    fun showFailure(message: String) {
         Toast.makeText(requireContext(), message, Toast.LENGTH_SHORT).show()
     }
 

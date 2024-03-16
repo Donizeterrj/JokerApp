@@ -6,8 +6,9 @@ import com.example.jokerapp.data.LIstCategoryCallback
 import com.example.jokerapp.model.Category
 import com.example.jokerapp.view.HomeFragment
 
-class HomePresenter(private val view: HomeFragment,
-                    private val dataSource: CategoryRemoteDataSource = CategoryRemoteDataSource()
+class HomePresenter(
+    private val view: HomeFragment,
+    private val dataSource: CategoryRemoteDataSource = CategoryRemoteDataSource()
 ): LIstCategoryCallback{
 //    VIEW <- PRESENTER
 //    PRESENTER <- VIEW
